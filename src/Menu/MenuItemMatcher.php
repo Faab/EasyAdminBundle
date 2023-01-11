@@ -2,6 +2,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Menu;
 
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\MenuItemDto;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
@@ -37,10 +38,14 @@ class MenuItemMatcher implements MenuItemMatcherInterface
         $currentPageQueryParameters = $this->filterIrrelevantQueryParameters($currentPageQueryParameters);
 
         // needed so you can pass route parameters in any order
-        sort($menuItemQueryParameters);
-        sort($currentPageQueryParameters);
+        asort($menuItemQueryParameters);
+        asort($currentPageQueryParameters);
 
-        return $menuItemQueryParameters === $currentPageQueryParameters;
+        if ($menuItemQueryParameters === $currentPageQueryParameters) {
+            return true;
+        }
+
+        return [EA::CRUD_ACTION => Action::INDEX] === \array_diff($menuItemQueryParameters, $currentPageQueryParameters);
     }
 
     public function isExpanded(MenuItemDto $menuItemDto): bool
